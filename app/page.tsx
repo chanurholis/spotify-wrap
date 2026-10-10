@@ -31,7 +31,7 @@ export default function Home() {
   const [cols, setCols] = useState(3);
   const [rows, setRows] = useState(3);
   const [labels, setLabels] = useState(false);
-  const [month, setMonth] = useState(thisMonth);
+  const [month, setMonth] = useState("");
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [sel, setSel] = useState(0);
   const [loaded, setLoaded] = useState(false);
@@ -50,13 +50,16 @@ export default function Home() {
 
   // Restore / persist the grid so a refresh doesn't lose work.
   useEffect(() => {
+    let saved = "";
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY) ?? "null");
       if (s) {
         setCols(s.cols); setRows(s.rows); setLabels(s.labels); setTiles(s.tiles);
-        if (s.month) setMonth(s.month);
+        saved = s.month;
       }
     } catch {}
+    // Date is client-only: cacheComponents forbids new Date() during prerender.
+    setMonth(saved || thisMonth());
     setLoaded(true);
   }, []);
   useEffect(() => {
